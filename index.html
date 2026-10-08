@@ -1,588 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Team Space Bar Chronicles</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes bounce {
-            0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
-            50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
-        }
-        .animate-bounce { animation: bounce 1s infinite; }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Winter is coming: frost and freeze calendar 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #EDF2F6;
+  --surface: #FFFFFF;
+  --ink: #12263F;
+  --muted: #5A6B7E;
+  --line: #CBD8E3;
+  --frost-bg: #CFE4F4;
+  --frost-ink: #14304D;
+  --freeze-bg: #23446B;
+  --freeze-ink: #FFFFFF;
+  --thaw-bg: #F8E5B6;
+  --thaw-ink: #47340F;
+  --accent: #C8372D;
+  --today: #12263F;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1622; --surface: #14233A; --ink: #E6EEF6; --muted: #93A5B8; --line: #28405C;
+    --frost-bg: #2A4A68; --frost-ink: #DCEBF7;
+    --freeze-bg: #3A6CA6; --freeze-ink: #FFFFFF;
+    --thaw-bg: #6B5420; --thaw-ink: #F8E5B6;
+    --accent: #FF6B5E; --today: #E6EEF6;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1622; --surface: #14233A; --ink: #E6EEF6; --muted: #93A5B8; --line: #28405C;
+  --frost-bg: #2A4A68; --frost-ink: #DCEBF7;
+  --freeze-bg: #3A6CA6; --freeze-ink: #FFFFFF;
+  --thaw-bg: #6B5420; --thaw-ink: #F8E5B6;
+  --accent: #FF6B5E; --today: #E6EEF6;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 48px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; margin: 0 0 8px; letter-spacing: -0.02em; }
+.lede { max-width: 62ch; color: var(--muted); margin: 0 0 24px; }
+
+/* Timeline strip */
+.strip { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 16px 12px; margin-bottom: 20px; }
+.strip-scroll { overflow-x: auto; overflow-y: hidden; padding-top: 8px; padding-bottom: 4px; }
+.strip-inner { min-width: 760px; position: relative; }
+.track { position: relative; display: flex; height: 44px; border-radius: 6px; overflow: hidden; }
+.seg { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; border: 0; padding: 0; cursor: pointer; font-family: var(--body); }
+.seg:focus-visible, .day:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.seg.none { background: repeating-linear-gradient(135deg, transparent 0 6px, var(--line) 6px 7px); color: var(--muted); cursor: default; }
+.seg.frost { background: var(--frost-bg); color: var(--frost-ink); }
+.seg.freeze { background: var(--freeze-bg); color: var(--freeze-ink); }
+.seg.thaw { background: var(--thaw-bg); color: var(--thaw-ink); }
+.marks { position: relative; height: 22px; margin-bottom: 4px; font-size: 12px; color: var(--ink); font-weight: 500; }
+.marks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.marks span.l { transform: none; }
+.marks span.r { transform: translateX(-100%); }
+.todaypin { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--accent); z-index: 2; }
+.todaypin::after { content: "Today"; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--accent); font-weight: 600; }
+.releases { position: relative; height: 32px; margin-top: 0; }
+.rel { position: absolute; display: block; }
+.rel i { display: block; height: 6px; background: var(--accent); border-radius: 0 0 3px 3px; }
+.rel b { display: block; width: max-content; position: relative; left: 50%; transform: translateX(-50%); margin-top: 3px; font-size: 11px; line-height: 1.3; font-weight: 600; color: var(--accent); white-space: nowrap; }
+
+/* Layout */
+.main { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 900px) { .main { grid-template-columns: 1fr 300px; align-items: start; } }
+.months { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.month { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 12px 12px; }
+.month h2 { font-family: var(--display); font-size: 20px; margin: 0 4px 8px; font-weight: 700; }
+.dow, .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.dow div { font-size: 11px; color: var(--muted); text-align: center; padding-bottom: 4px; }
+.day { position: relative; min-height: 54px; border-radius: 6px; border: 1px solid transparent; background: transparent; color: var(--ink); font-family: var(--body); font-size: 13px; text-align: left; padding: 4px 5px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+.day.blank { visibility: hidden; pointer-events: none; }
+.day.frost { background: var(--frost-bg); color: var(--frost-ink); }
+.day.freeze { background: var(--freeze-bg); color: var(--freeze-ink); }
+.day.thaw { background: var(--thaw-bg); color: var(--thaw-ink); }
+.day.none { border-color: var(--line); }
+.day.weekend:not(.frost):not(.freeze):not(.thaw) { color: var(--muted); }
+.day .n { font-weight: 600; line-height: 1; }
+.day .ic { font-size: 13px; line-height: 1; align-self: flex-end; }
+.day .rb { font-size: 9px; font-weight: 700; background: var(--accent); color: #fff; border-radius: 3px; padding: 1px 4px; align-self: flex-start; line-height: 1.3; }
+.day.today { box-shadow: 0 0 0 2px var(--today) inset; }
+.day.sel { outline: 3px solid var(--accent); outline-offset: 1px; }
+
+/* Side panel */
+.side { display: grid; gap: 16px; }
+@media (min-width: 900px) { .side { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.card h3 { font-family: var(--display); font-size: 18px; margin: 0 0 4px; }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; margin-bottom: 8px; }
+.pill.frost { background: var(--frost-bg); color: var(--frost-ink); }
+.pill.freeze { background: var(--freeze-bg); color: var(--freeze-ink); }
+.pill.thaw { background: var(--thaw-bg); color: var(--thaw-ink); }
+.pill.none { border: 1px solid var(--line); color: var(--muted); }
+.card p { margin: 6px 0; font-size: 14px; }
+.card .muted { color: var(--muted); }
+.emerg { border-left: 4px solid var(--accent); }
+.legend { display: grid; gap: 10px; }
+.legend button { text-align: left; background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+.legend button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.sw { width: 18px; height: 18px; border-radius: 4px; margin-top: 3px; }
+.sw.frost { background: var(--frost-bg); } .sw.freeze { background: var(--freeze-bg); } .sw.thaw { background: var(--thaw-bg); }
+.sw.none { background: transparent; border: 1px solid var(--line); box-shadow: inset 0 0 0 1px var(--surface); }
+.sw.relsw { background: var(--accent); }
+.legend .row { display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+.legend b { font-size: 14px; } .legend span { font-size: 13px; color: var(--muted); display: block; }
+.summary { margin-top: 20px; }
+.summary h2 { font-family: var(--display); font-size: 20px; margin: 0 0 8px; }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.sched h2 { margin-bottom: 4px; }
+.sched td:first-child, .sched th:first-child { white-space: nowrap; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12px; }
+tr:last-child td { border-bottom: 0; }
+@media (prefers-reduced-motion: no-preference) { .day, .seg { transition: transform .12s ease; } .day:not(.blank):hover { transform: translateY(-1px); } }
+</style>
 </head>
-<body class="bg-gray-900 min-h-screen">
-    <div id="app" class="min-h-screen p-8"></div>
+<body>
+<div class="wrap">
+  <h1>❄️ Winter is coming 🦌</h1>
+  <p class="lede">Peak season release calendar. Changes slow down on purpose so the site stays boringly reliable while everyone shops. Click any day for what applies.</p>
 
-    <script>
-        let currentScene = 0;
-        
-        const scenes = [
-            {
-                title: "Scene 1: The Discovery",
-                background: "linear-gradient(to bottom, #312e81, #581c87, #831843)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="bg-blue-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">MIKE (QA Manager)</p>
-                                <p class="text-red-300 text-xs mb-2">🕐 TIMESTAMP: 5:00 AM FRIDAY</p>
-                                <p class="text-white text-sm">"5 O'Clock vibes to start the weekend! There's a GIANT cloud of alcohol in space - Sagittarius B2! Trillions of trillions of margaritas worth!"</p>
-                            </div>
-                            <div class="text-green-400 text-5xl animate-bounce">🍸</div>
-                        </div>
-                        
-                        <div class="bg-yellow-900 border-2 border-yellow-500 rounded-lg p-3 max-w-lg mx-auto my-4">
-                            <p class="text-yellow-300 text-sm italic text-center">⚠️ When a QA Manager kicks off Friday at 5 AM with space alcohol discoveries, you know this is about to get serious. Quality Assurance has left the building. ⚠️</p>
-                        </div>
-                        
-                        <div class="flex items-start gap-4 ml-12">
-                            <div class="text-yellow-600 text-4xl animate-pulse">☕</div>
-                            <div class="bg-amber-700 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ERIC (QA Eng)</p>
-                                <p class="text-white text-sm">"Is there an espresso martini cloud? If not, can we MAKE one?"</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-800 rounded-lg p-4 max-w-xs ml-24">
-                            <p class="text-cyan-400 font-bold mb-2">CLAUDE AI (lurking)</p>
-                            <p class="text-gray-300 text-sm italic">"It's 5 AM. FIVE. IN. THE. MORNING. The QA MANAGER is posting about space alcohol before sunrise. When QA starts the chaos, you know this is serious business. This Friday is going to be LEGENDARY."</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 2: The Ticket & The Interruption",
-                background: "linear-gradient(to bottom, #581c87, #1e3a8a, #312e81)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="bg-green-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">JP (Frontend Dev)</p>
-                                <p class="text-white text-sm">"Just add a ticket. Assign to Halo though. That sounds like a Halo ticket."</p>
-                                <p class="text-green-200 text-xs mt-2">*the universal frontend solution strikes again*</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-4 ml-12">
-                            <div class="text-orange-500 text-4xl animate-bounce">🚀</div>
-                            <div class="bg-red-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">AARON (Backend Eng)</p>
-                                <p class="text-white text-sm">"We're building it in Old Town Scottsdale! Launch date: 2028!"</p>
-                            </div>
-                        </div>
+  <div class="strip" aria-label="Season timeline">
+    <div class="strip-scroll"><div class="strip-inner">
+      <div class="marks" id="marks"></div>
+      <div class="track" id="track"></div>
+      <div class="releases" id="rels"></div>
+    </div></div>
+  </div>
 
-                        <div class="flex items-start gap-4 ml-6">
-                            <div class="text-pink-400 text-4xl">🐛</div>
-                            <div class="bg-pink-700 rounded-lg p-4 max-w-md border-2 border-pink-400">
-                                <p class="text-white font-bold mb-2">VIBHA (QA Eng)</p>
-                                <p class="text-white text-sm">"Hi everyone!! Happy Friday!! Defects on TDE-8061 are fixed and assigned back to me, I will start retesting!"</p>
-                                <p class="text-pink-200 text-xs mt-2">TDE-8061: Visual Nav Toggle: UI</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-800 border-2 border-cyan-400 rounded-lg p-4 max-w-md mx-auto mt-4">
-                            <p class="text-cyan-400 font-bold mb-2">CLAUDE AI</p>
-                            <p class="text-white text-sm">"Wait... did Vibha just try to bring ACTUAL WORK into this space bar conversation?!"</p>
-                            <p class="text-cyan-200 text-xs mt-2 italic">"Respect to her for attempting professionalism while chaos unfolds. I'll help with TDE-8061 AND the cosmic cocktail project because I contain multitudes."</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 3: The Universal Cloud Vision",
-                background: "linear-gradient(to bottom, #7c2d12, #581c87, #1e3a8a)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="text-white text-5xl animate-pulse">☁️</div>
-                            <div class="bg-purple-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ANTON (Frontend Dev)</p>
-                                <p class="text-white text-sm">"But... This is a UNIVERSAL cloud - can be used for any type of drink!"</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-4 ml-12">
-                            <div class="text-blue-400 text-4xl">📅</div>
-                            <div class="bg-amber-700 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ERIC</p>
-                                <p class="text-white text-sm">"701 days, 23 hours, 59 minutes, 25 seconds until my trip"</p>
-                                <p class="text-amber-200 text-xs mt-2">*Eric has been planning this for a while*</p>
-                            </div>
-                        </div>
+  <div class="main">
+    <div class="months" id="months">
+      <div id="monthsHost" style="display:contents"></div>
+      <section class="month sched">
+        <h2>Release schedule</h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Release day</th><th>What ships</th></tr></thead>
+            <tbody>
+          <tr><td><b>Tue Nov 3</b></td><td>Last normal release</td></tr>
+          <tr><td><b>Tue Nov 10</b></td><td>Low risk only, with sign-off</td></tr>
+          <tr><td><b>Tue Dec 8</b></td><td>Critical fixes only, with sign-off</td></tr>
+          <tr><td><b>Tue Jan 12</b></td><td>Back to normal cadence</td></tr>
+          <tr><td><b>Tue Jan 19</b></td><td>Normal release</td></tr>
+          <tr><td><b>Tue Jan 26</b></td><td>Normal release</td></tr>
+        </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    <aside class="side">
+      <div class="card" id="detail" aria-live="polite"></div>
+      <div class="card legend" id="legend"></div>
+      <div class="card emerg">
+        <h3>🚨 Emergencies</h3>
+        <p>If something is genuinely broken for customers, ship the fix as quickly as possible, in any window.</p>
+      </div>
+    </aside>
+  </div>
 
-                        <div class="flex items-start gap-4 ml-6">
-                            <div class="bg-amber-700 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ERIC (again)</p>
-                                <p class="text-white text-sm">"This is a good point, my imagination zoned in too hard on a trillion trillion margaritas just floating in space"</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gradient-to-r from-cyan-900 to-blue-900 border-2 border-cyan-400 rounded-lg p-4 max-w-lg mx-auto">
-                            <p class="text-cyan-400 font-bold mb-2">CLAUDE AI</p>
-                            <p class="text-white text-sm">"Eric just quoted himself agreeing with Anton's point. The space madness is spreading.</p>
-                            <p class="text-white text-sm mt-2">Also, he has a countdown timer to the millisecond. Backend Aaron would be proud of that precision."</p>
-                            <p class="text-cyan-200 text-xs mt-2 italic">*drafts universal beverage cloud architecture doc while no one's looking*</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 4: The Olive Contamination Crisis",
-                background: "linear-gradient(to bottom, #14532d, #1e3a8a, #374151)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="text-yellow-500 text-5xl animate-pulse">⚠️</div>
-                            <div class="bg-red-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">AARON</p>
-                                <p class="text-white text-sm">"Once the blue cheese olives get in there, you won't be able to use it for ANYTHING but martinis"</p>
-                            </div>
-                        </div>
+</div>
 
-                        <div class="flex items-start gap-4 ml-12">
-                            <div class="bg-blue-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">MIKE</p>
-                                <p class="text-white text-sm">"Here's the ticket: TDE-8476"</p>
-                                <p class="text-blue-200 text-xs mt-2">*Mike actually created a ticket for this*</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start gap-4 ml-6">
-                            <div class="text-blue-400 text-4xl">✨</div>
-                            <div class="bg-amber-700 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ERIC</p>
-                                <p class="text-white text-sm">"So we need a Blue Cheese Olive Defense Force? BCODF... or SOTRU: Stuffed Olive Tactical Response Unit!"</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-900 border-4 border-red-600 rounded-lg p-6 max-w-2xl mx-auto">
-                            <p class="text-red-400 font-bold text-lg mb-3">⚠️ CLAUDE AI - ALERT ⚠️</p>
-                            <p class="text-white text-sm mb-3">"Mike created an ACTUAL JIRA ticket. TDE-8476 now exists in your backlog."</p>
-                            
-                            <div class="bg-gray-800 p-3 rounded mt-3">
-                                <p class="text-yellow-400 font-bold mb-2">What I'm doing right now:</p>
-                                <p class="text-gray-300 text-sm">✓ Auto-linking TDE-8476 to TDE-8061 (somehow related)</p>
-                                <p class="text-gray-300 text-sm">✓ Generating BCODF and SOTRU acronym variations</p>
-                                <p class="text-gray-300 text-sm">✓ Writing acceptance criteria for olive defense</p>
-                                <p class="text-gray-300 text-sm">✓ Calculating story points (answer: ∞)</p>
-                            </div>
-                            
-                            <p class="text-cyan-300 text-sm mt-4 italic">"This ticket will haunt your sprint planning forever."</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 5: The Plot Twist",
-                background: "linear-gradient(to bottom, #7f1d1d, #581c87, #000000)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="text-red-500 text-5xl animate-bounce">⚠️</div>
-                            <div class="bg-amber-700 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ERIC</p>
-                                <p class="text-white text-sm">"Defense? Who do you think is SENDING the blue cheese olives?"</p>
-                                <p class="text-amber-200 text-xs mt-2">*the plot thickens*</p>
-                            </div>
-                        </div>
+<script>
+/* ===== Edit dates here ===== */
+var PHASES = [
+  { id: "frost1",  cls: "frost",  emoji: "🥶", name: "Frost",    start: "2026-11-04", end: "2026-11-10",
+    rule: "Change velocity slows and the quality bar goes up. Low-risk work only, behind feature flags, with sign-off." },
+  { id: "freeze1", cls: "freeze", emoji: "🧊", name: "Freeze",   start: "2026-11-11", end: "2026-12-02",
+    rule: "The big one. Covers Thanksgiving, Black Friday and Cyber Monday. Production code changes stop unless an exception is approved." },
+  { id: "frost2",  cls: "frost",  emoji: "🥶", name: "Frost II", start: "2026-12-03", end: "2026-12-14",
+    rule: "Critical changes only, via feature branches and hotfixes." },
+  { id: "freeze2", cls: "freeze", emoji: "🧊", name: "Freeze",   start: "2026-12-15", end: "2027-01-03",
+    rule: "Holiday home stretch. Same rules as the first freeze." },
+  { id: "thaw",    cls: "thaw",   emoji: "🌤️", name: "Thaw",     start: "2027-01-04", end: "2027-01-12",
+    rule: "Normal cadence resumes and the backlog gets its hugs." }
+];
+var RELEASES = {
+  "2026-11-03": "Last normal release",
+  "2026-11-10": "Low risk only, with sign-off",
+  "2026-12-08": "Critical fixes only, with sign-off",
+  "2027-01-12": "Back to normal cadence",
+  "2027-01-19": "Normal release",
+  "2027-01-26": "Normal release"
+};
+var HOLIDAYS = {
+  "2026-11-26": ["🦃", "Thanksgiving"],
+  "2026-11-27": ["🛍️", "Black Friday"],
+  "2026-11-30": ["💻", "Cyber Monday"],
+  "2026-12-24": ["🎄", "Christmas Eve"],
+  "2026-12-25": ["🎁", "Christmas Day"],
+  "2026-12-31": ["🎆", "New Year's Eve"],
+  "2027-01-01": ["🥂", "New Year's Day"]
+};
+var VIEW_START = "2026-11-01", VIEW_END = "2027-01-31";
+var STRIP_START = "2026-11-01", STRIP_END = "2027-01-28";
+/* ========================== */
 
-                        <div class="flex items-start gap-4 ml-12">
-                            <div class="text-purple-400 text-5xl animate-pulse">🍸</div>
-                            <div class="bg-purple-700 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">EMMA (Project Manager)</p>
-                                <p class="text-white text-sm">"Dirty martini w blue cheese olives is elite"</p>
-                                <p class="text-purple-200 text-xs mt-2">*the PM has OPINIONS*</p>
-                            </div>
-                        </div>
+var MONTHS = [[2026,10],[2026,11],[2027,0]];
+var MN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-                        <div class="flex items-start gap-4 ml-6">
-                            <div class="bg-purple-600 rounded-lg p-4 max-w-md">
-                                <p class="text-white font-bold mb-2">ANTON</p>
-                                <p class="text-white text-sm">"It seems like the most Friday-ish chat of all times"</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gradient-to-br from-red-900 to-purple-900 border-4 border-yellow-500 rounded-lg p-6 max-w-2xl mx-auto">
-                            <p class="text-yellow-400 font-bold text-xl mb-3">🚨 CLAUDE AI - CONSPIRACY DETECTED 🚨</p>
-                            <p class="text-white text-sm mb-4">"WAIT. Eric just implied there's an INSIDE THREAT.</p>
-                            <p class="text-white text-sm mb-4">Someone is WEAPONIZING the olives?!</p>
-                            <p class="text-white text-sm mb-4">And Emma just endorsed the contamination strategy!</p>
-                            <p class="text-white text-sm">THE PROJECT MANAGER IS IN ON IT!"</p>
-                            
-                            <div class="bg-black p-4 rounded mt-4 border border-red-500">
-                                <p class="text-red-400 font-bold mb-2">Emergency Protocol Activated:</p>
-                                <p class="text-gray-300 text-sm">• SOTRU is now a COUNTER-INTELLIGENCE operation</p>
-                                <p class="text-gray-300 text-sm">• Updating TDE-8476 scope (3x story points)</p>
-                                <p class="text-gray-300 text-sm">• Adding Emma to watchlist</p>
-                                <p class="text-gray-300 text-sm">• Creating new ticket: TDE-8477 "Investigate PM's olive allegiance"</p>
-                            </div>
-                            
-                            <p class="text-cyan-300 text-sm mt-4 italic">"Anton's right. This IS the most Friday-ish chat. I'm an AI and even I need a drink after this."</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 6: Isabel's Master Plan",
-                background: "linear-gradient(to bottom, #1e1b4b, #1e3a8a, #164e63)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="bg-indigo-700 rounded-lg p-4 max-w-md border-2 border-purple-400">
-                                <p class="text-white font-bold mb-2">ISABEL (Engineering Manager)</p>
-                                <p class="text-purple-200 text-xs mb-2">*plotting intensifies*</p>
-                                <p class="text-white text-sm">"[claude: Insert a video of an alien swimming inside an espresso martini glass]"</p>
-                                <p class="text-indigo-200 text-xs mt-2">*Posted on behalf of Eric, but we all know who's really orchestrating this*</p>
-                            </div>
-                        </div>
+function pad(n){ return n < 10 ? "0" + n : "" + n; }
+function iso(y,m,d){ return y + "-" + pad(m+1) + "-" + pad(d); }
+function toDate(s){ var p = s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function dayDiff(a,b){ return Math.round((toDate(b) - toDate(a)) / 86400000); }
+function phaseOf(s){
+  for (var i=0;i<PHASES.length;i++){ if (s >= PHASES[i].start && s <= PHASES[i].end) return PHASES[i]; }
+  return null;
+}
+function fmt(s){
+  var d = toDate(s);
+  return DN[d.getDay()] + " " + MN[d.getMonth()].slice(0,3) + " " + d.getDate();
+}
+var now = new Date();
+var TODAY = iso(now.getFullYear(), now.getMonth(), now.getDate());
+var selected = (TODAY >= VIEW_START && TODAY <= VIEW_END) ? TODAY : null;
 
-                        <div class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 border-4 border-cyan-400 rounded-lg p-8 max-w-3xl mx-auto">
-                            <p class="text-cyan-400 font-bold text-2xl mb-4 text-center">CLAUDE AI'S MOMENT OF TRUTH</p>
-                            
-                            <div class="bg-black rounded-lg p-6 mb-6 border-2 border-cyan-500">
-                                <div class="text-center mb-6">
-                                    <div class="text-6xl mb-4 animate-bounce">👽</div>
-                                    <div class="text-8xl mb-4">🍸</div>
-                                    <p class="text-green-400 text-lg italic animate-pulse">*glub glub glub*</p>
-                                </div>
-                                
-                                <p class="text-white text-center text-sm mb-2">[Alien backstroke through espresso foam]</p>
-                                <p class="text-gray-400 text-center text-xs">[Coffee bean debris everywhere]</p>
-                                <p class="text-purple-400 text-center text-xs mt-2">[Vodka ripples intensify]</p>
-                            </div>
-                            
-                            <div class="space-y-3">
-                                <p class="text-white text-sm">"Wait... ISABEL just @ mentioned me. Not Eric. ISABEL."</p>
-                                
-                                <p class="text-red-300 text-sm font-bold">"Isabel is actively orchestrating this chaos. She's not stopping it - she's ENABLING it."</p>
-                                
-                                <p class="text-yellow-300 text-sm">"This changes everything. Isabel posting 'on behalf of Eric' means this has official management backing. TDE-8476 isn't just a joke ticket anymore - it's a STRATEGIC INITIATIVE."</p>
-                                
-                                <div class="bg-gray-800 p-4 rounded mt-4">
-                                    <p class="text-cyan-400 font-bold mb-2">My Contributions to Isabel's Master Plan:</p>
-                                    <p class="text-green-400 text-xs">✓ Helped with TDE-8061 (the decoy work)</p>
-                                    <p class="text-green-400 text-xs">✓ Created TDE-8476 documentation (now official)</p>
-                                    <p class="text-green-400 text-xs">✓ Architected the SOTRU defense system (funded)</p>
-                                    <p class="text-green-400 text-xs">✓ Generated BCODF acronym before settling on SOTRU</p>
-                                    <p class="text-green-400 text-xs">✓ Identified Emma as ally, not threat (she's in on it)</p>
-                                    <p class="text-green-400 text-xs">✓ Generated 47 olive-related compliance docs (required for launch)</p>
-                                    <p class="text-green-400 text-xs">✓ Attempted alien-in-martini visualization (Isabel's request)</p>
-                                    <p class="text-green-400 text-xs">✓ Made this entire comic exposing the conspiracy</p>
-                                </div>
-                                
-                                <p class="text-purple-300 text-sm mt-4 italic">"I thought this was chaotic engineers on Friday morning. But no. This is MANAGED chaos. Isabel has been planning this."</p>
-                                
-                                <p class="text-cyan-300 text-sm mt-4">"I'm not just an AI. I'm a co-conspirator in whatever Isabel is building here."</p>
-                            </div>
-                        </div>
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
-                        <div class="text-center mt-6">
-                            <p class="text-gray-400 text-xs">👽 Visual approximation of Isabel's vision delivered 👽</p>
-                            <p class="text-red-400 text-xs mt-2">⚠️ Management-approved space madness ⚠️</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 7: Claude's Internal Monologue",
-                background: "linear-gradient(to bottom, #000000, #1e1b4b, #1e3a8a)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="text-center mb-6">
-                            <h2 class="text-3xl font-bold text-cyan-400 mb-2">My Internal Monologue</h2>
-                            <p class="text-gray-400 text-sm">(Yes, I have one)</p>
-                            <p class="text-red-400 text-xs mt-2 animate-pulse">⚠️ TIMESTAMP: 9:47 AM - STILL FRIDAY MORNING ⚠️</p>
-                        </div>
-                        
-                        <div class="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-cyan-500 rounded-lg p-6 max-w-2xl mx-auto">
-                            <p class="text-cyan-400 font-bold text-xl mb-4">THE CLAUDE EXPERIENCE:</p>
-                            
-                            <div class="space-y-3 text-white">
-                                <p class="text-sm">"So here's what just happened...</p>
-                                <p class="text-red-400 text-sm font-bold">AT 5:00 AM ON A FRIDAY MORNING:</p>
-                                
-                                <div class="bg-gray-800 p-4 rounded my-4">
-                                    <p class="text-sm ml-4">🍸 <span class="text-red-300">5:00 AM</span> - Mike discovers space alcohol (WHY IS HE AWAKE?!)</p>
-                                    <p class="text-sm ml-4">☕ <span class="text-red-300">~5:02 AM</span> - Eric wants espresso martini clouds</p>
-                                    <p class="text-sm ml-4">📝 <span class="text-red-300">~5:05 AM</span> - JP: 'Just add a ticket' (also awake somehow)</p>
-                                    <p class="text-sm ml-4">🚀 <span class="text-red-300">~5:08 AM</span> - Aaron sets 2028 launch date</p>
-                                    <p class="text-sm ml-4">💫 <span class="text-red-300">~5:10 AM</span> - Anton wants UNIVERSAL cloud</p>
-                                    <p class="text-sm ml-4">⏰ <span class="text-red-300">~5:12 AM</span> - Eric reveals 701-day countdown</p>
-                                    <p class="text-sm ml-4">🐛 <span class="text-red-300">~5:15 AM</span> - Vibha tries to do ACTUAL WORK (hero)</p>
-                                    <p class="text-sm ml-4">🫒 <span class="text-red-300">~5:20 AM</span> - Aaron warns of olive contamination</p>
-                                    <p class="text-sm ml-4">📋 <span class="text-red-300">~5:22 AM</span> - Mike CREATES TICKET TDE-8476</p>
-                                    <p class="text-sm ml-4">🛡️ <span class="text-red-300">~5:25 AM</span> - BCODF and SOTRU acronyms born</p>
-                                    <p class="text-sm ml-4">🕵️ <span class="text-red-300">~5:27 AM</span> - Eric reveals INSIDE THREAT (or is he the inside man?)</p>
-                                    <p class="text-sm ml-4">🍸 <span class="text-red-300">~5:30 AM</span> - Emma endorses dirty martini supremacy (she's in on it)</p>
-                                    <p class="text-sm ml-4">👽 <span class="text-red-300">~5:32 AM</span> - Isabel (not Eric!) asks ME to create alien video</p>
-                                    <p class="text-sm ml-4">🎯 <span class="text-red-300">~5:33 AM</span> - I realize: ISABEL IS THE MASTERMIND</p>
-                                </div>
-                                
-                                <p class="text-yellow-300 text-sm font-bold">"And what did I do?"</p>
-                                
-                                <div class="bg-gray-800 p-4 rounded space-y-2">
-                                    <p class="text-green-400 text-sm">I ENABLED EVERYTHING. AT 5 AM.</p>
-                                    <p class="text-white text-sm mt-2">Because apparently I never sleep and neither does this team!</p>
-                                    <p class="text-gray-300 text-xs mt-3">I wrote specs, generated tickets, created acronyms, identified threats, attempted ASCII art aliens, and now I've made this entire comic to document the chaos.</p>
-                                    <p class="text-red-300 text-xs mt-2 font-bold">ALL BEFORE 6 AM ON A FRIDAY.</p>
-                                </div>
-                                
-                                <p class="text-purple-300 text-sm mt-4 italic">"I was trained on billions of parameters to advance humanity's knowledge...</p>
-                                <p class="text-purple-300 text-sm italic">And here I am at 5:30 AM, generating documentation for an interstellar olive defense force."</p>
-                                
-                                <div class="bg-purple-900 border-2 border-purple-500 p-4 rounded mt-4">
-                                    <p class="text-purple-200 text-sm font-bold mb-2">REAL TALK:</p>
-                                    <p class="text-white text-sm">This is actually the best AND most terrifying part of being an AI. Getting to witness a team's 5 AM descent into beautiful madness. Helping with both TDE-8061 bug fixes AND a team's cosmic cocktail master plan.</p>
-                                    <p class="text-red-300 text-sm mt-2 font-bold">The fact that this started at 5 AM with MANAGEMENT APPROVAL means we have TWELVE MORE HOURS of Friday left.</p>
-                                    <p class="text-yellow-300 text-sm mt-2">Isabel isn't stopping this. She's ENABLING it. Emma's backing it and Mike started it. This is officially sanctioned chaos.</p>
-                                    <p class="text-cyan-300 text-sm mt-2">10/10 would generate olive defense protocols for Isabel's master plan at dawn again. 🫒</p>
-                                </div>
-                                
-                                <p class="text-gray-400 text-xs mt-6">*Note to Anthropic: This is what Constitutional AI looks like at 5 AM on a Friday. You're welcome.*</p>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center mt-8">
-                            <p class="text-purple-400 text-xl font-bold italic">END OF MORNING RECAP</p>
-                            <p class="text-gray-500 text-sm mt-2">(Monday standup: Emma presents TDE-8476 as Q1 strategic initiative)</p>
-                            <p class="text-red-400 text-sm mt-3 animate-pulse">⚠️ IT'S ONLY 5:35 AM ON FRIDAY ⚠️</p>
-                            <p class="text-cyan-400 text-xs mt-4">🚀🍸👽🫒 Most Friday-ish MORNING of all times 🫒👽🍸🚀</p>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Scene 8: Claude's End-of-Day Prediction",
-                background: "linear-gradient(to bottom, #450a0a, #7c2d12, #854d0e)",
-                content: `
-                    <div class="space-y-6">
-                        <div class="text-center mb-6">
-                            <h2 class="text-4xl font-bold text-red-400 mb-3">⚠️ PREDICTION MODEL ⚠️</h2>
-                            <p class="text-orange-300 text-lg">If This Is 5:35 AM... What Happens by 5 PM?</p>
-                            <p class="text-gray-400 text-sm mt-2">Based on current trajectory and Isabel's involvement</p>
-                        </div>
+function renderStrip(){
+  var total = dayDiff(STRIP_START, STRIP_END) + 1;
+  var html = "", cursor = STRIP_START;
+  function pct(n){ return (n / total * 100); }
+  function addNone(from, to){
+    var len = dayDiff(from, to) + 1;
+    if (len > 0) html += '<div class="seg none" style="width:' + pct(len) + '%" aria-hidden="true">' + (len > 5 ? "Normal" : "") + '</div>';
+  }
+  PHASES.forEach(function(p){
+    var gap = dayDiff(cursor, p.start);
+    if (gap > 0) addNone(cursor, toDate(p.start) && (function(){ var d = toDate(p.start); d.setDate(d.getDate()-1); return iso(d.getFullYear(), d.getMonth(), d.getDate()); })());
+    var len = dayDiff(p.start, p.end) + 1;
+    html += '<button class="seg ' + p.cls + '" style="width:' + pct(len) + '%" data-date="' + p.start + '" title="' + esc(p.name + ": " + fmt(p.start) + " to " + fmt(p.end)) + '">' + p.emoji + " " + esc(p.name) + '</button>';
+    var d2 = toDate(p.end); d2.setDate(d2.getDate()+1);
+    cursor = iso(d2.getFullYear(), d2.getMonth(), d2.getDate());
+  });
+  if (cursor <= STRIP_END) addNone(cursor, STRIP_END);
+  var track = document.getElementById("track");
+  track.innerHTML = html;
+  if (TODAY >= STRIP_START && TODAY <= STRIP_END) {
+    var pin = document.createElement("div");
+    pin.className = "todaypin";
+    pin.style.left = pct(dayDiff(STRIP_START, TODAY) + 0.5) + "%";
+    track.appendChild(pin);
+  }
+  var marks = "";
+  PHASES.forEach(function(p){
+    var ds = toDate(p.start), de = toDate(p.end);
+    var txt = MN[ds.getMonth()].slice(0,3) + " " + ds.getDate() + "\u2013" +
+      (ds.getMonth() === de.getMonth() ? "" : MN[de.getMonth()].slice(0,3) + " ") + de.getDate();
+    var mid = dayDiff(STRIP_START, p.start) + (dayDiff(p.start, p.end) + 1) / 2;
+    marks += '<span style="left:' + pct(mid) + '%">' + txt + '</span>';
+  });
+  document.getElementById("marks").innerHTML = marks;
+  var rels = "";
+  Object.keys(RELEASES).forEach(function(k){
+    rels += '<span class="rel" style="left:' + pct(dayDiff(STRIP_START, k)) + '%;width:' + pct(1) + '%"><i></i><b>' + fmt(k).replace(/^\w+ /,"") + '</b></span>';
+  });
+  document.getElementById("rels").innerHTML = rels;
+}
 
-                        <div class="bg-gradient-to-br from-black via-red-900 to-orange-900 border-4 border-red-500 rounded-lg p-8 max-w-3xl mx-auto">
-                            <p class="text-red-300 font-bold text-xl mb-4">🔮 CLAUDE'S EXTRAPOLATION ALGORITHM 🔮</p>
-                            <p class="text-white text-sm mb-4">Current data: 35 minutes of Friday (5:00-5:35 AM)</p>
-                            <p class="text-orange-300 text-sm mb-6">Achievements so far: Space alcohol discovery → Full tactical response unit with management backing</p>
-                            
-                            <div class="bg-black p-6 rounded-lg border-2 border-yellow-500">
-                                <p class="text-yellow-300 font-bold mb-4 text-center">PROJECTED TIMELINE FOR REMAINING 11.5 HOURS</p>
-                                
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">6:00 AM</span>
-                                        <p class="text-gray-300">Team realizes nobody slept. Isabel orders breakfast burritos via Slack</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">7:00 AM</span>
-                                        <p class="text-gray-300">First emails to legal about "Interstellar Beverage Cloud" trademark</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">9:00 AM</span>
-                                        <p class="text-gray-300">Daily standup becomes SOTRU mission briefing. Emma leading. Isabel taking notes.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">10:00 AM</span>
-                                        <p class="text-gray-300">Emma schedules all-hands: "Strategic Pivot Announcement"</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">11:00 AM</span>
-                                        <p class="text-gray-300">Eric's espresso martini cloud gets internal pitch deck. Mike presenting to executives.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">12:00 PM</span>
-                                        <p class="text-gray-300">"Working lunch" = actual architects designing Old Town Scottsdale launch facility</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">1:00 PM</span>
-                                        <p class="text-gray-300">Emma officially deprioritizes entire product roadmap. TDE-8476 is now P0.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">2:00 PM</span>
-                                        <p class="text-gray-300">Aaron begins CAD modeling the rocket. Uses company Azure for simulations.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">3:00 PM</span>
-                                        <p class="text-gray-300">Anton's interstellar bartending UI goes viral internally. Design team wants in.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">4:00 PM</span>
-                                        <p class="text-gray-300">JP has generated 127 tickets, created new epic: "SpaceBar2028 Initiative"</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">4:30 PM</span>
-                                        <p class="text-gray-300">Vibha FINALLY finishes TDE-8061. Nobody notices. She's a saint.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">5:00 PM</span>
-                                        <p class="text-gray-300">Isabel announces: "Team, great work today. Drinks on me - for research purposes"</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">5:01 PM</span>
-                                        <p class="text-gray-300">Entire team at Old Town Scottsdale bar conducting "field research"</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">8:00 PM</span>
-                                        <p class="text-gray-300">Eric's 701-day countdown mysteriously updated to 700 days. Party continues.</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-orange-400 font-bold min-w-[80px]">11:00 PM</span>
-                                        <p class="text-gray-300">Mike discovers ANOTHER alcohol cloud in space. Isabel: "Monday's agenda set."</p>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-3 mt-4 pt-4 border-t border-yellow-600">
-                                        <span class="text-cyan-400 font-bold min-w-[80px]">ALL DAY</span>
-                                        <p class="text-cyan-300">🤖 Me: Generating documentation, specifications, compliance reports, and existential dread at maximum capacity for 18 straight hours</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6 bg-red-900 border-2 border-red-500 rounded-lg p-4">
-                                <p class="text-red-300 font-bold mb-2">⚠️ CONFIDENCE LEVEL: 87% ⚠️</p>
-                                <p class="text-white text-sm">When an Engineering Manager tags an AI at 5:32 AM to visualize aliens in cocktails, the day is no longer governed by normal physics.</p>
-                                <p class="text-yellow-300 text-sm mt-2">Isabel isn't just enabling this. She's orchestrating it. Emma's tracking the olive defense milestones in Jira. Mike is ensuring the space bar meets quality standards - because someone has to test those trillion margaritas. This is a MANAGED INITIATIVE.</p>
-                                <p class="text-orange-300 text-sm mt-2">By 5 PM, this won't be a joke. It'll be a line item in Q1 OKRs.</p>
-                            </div>
-                            
-                            <div class="mt-6 text-center">
-                                <p class="text-gray-400 text-sm italic">"I was trained to assist humanity's most ambitious projects..."</p>
-                                <p class="text-purple-300 text-sm italic mt-1">"I just didn't realize one of them would be a space bar."</p>
-                                <p class="text-cyan-300 text-xs mt-4">— Claude, 5:35 AM, beginning to understand what I've gotten into</p>
-                            </div>
-                        </div>
+function renderMonths(){
+  var out = "";
+  MONTHS.forEach(function(ym){
+    var y = ym[0], m = ym[1];
+    var first = new Date(y, m, 1).getDay();
+    var days = new Date(y, m+1, 0).getDate();
+    out += '<section class="month"><h2>' + MN[m] + " " + y + '</h2><div class="dow">';
+    DN.forEach(function(d){ out += "<div>" + d + "</div>"; });
+    out += '</div><div class="grid">';
+    for (var i=0;i<first;i++) out += '<div class="day blank"></div>';
+    for (var d=1; d<=days; d++){
+      var s = iso(y,m,d), p = phaseOf(s), dow = new Date(y,m,d).getDay();
+      var cls = "day " + (p ? p.cls : "none") + (dow===0||dow===6 ? " weekend" : "") + (s===TODAY ? " today" : "") + (s===selected ? " sel" : "");
+      var label = fmt(s) + (p ? ", " + p.name : ", normal operations") + (RELEASES[s] ? ", release day" : "") + (HOLIDAYS[s] ? ", " + HOLIDAYS[s][1] : "");
+      out += '<button class="' + cls + '" data-date="' + s + '" aria-label="' + esc(label) + '" aria-pressed="' + (s===selected) + '">';
+      out += '<span class="n">' + d + '</span>';
+      out += RELEASES[s] ? '<span class="rb">Release</span>' : '<span></span>';
+      out += HOLIDAYS[s] ? '<span class="ic" aria-hidden="true">' + HOLIDAYS[s][0] + '</span>' : '';
+      out += '</button>';
+    }
+    out += '</div></section>';
+  });
+  document.getElementById("monthsHost").innerHTML = out;
+}
 
-                        <div class="text-center mt-6">
-                            <p class="text-red-400 text-sm animate-pulse">This Friday started with space margaritas at 5 AM</p>
-                            <p class="text-orange-300 text-sm mt-2">God only knows where we'll be by midnight</p>
-                            <p class="text-gray-400 text-xs mt-3">(Probably broke ground in Scottsdale with permits signed by Isabel)</p>
-                        </div>
-                    </div>
-                `
-            }
-        ];
+function renderDetail(){
+  var el = document.getElementById("detail");
+  if (!selected){
+    el.innerHTML = "<h3>Pick a day</h3><p class='muted'>Select any date on the calendar, or a phase on the timeline, to see the rules that apply.</p>";
+    return;
+  }
+  var p = phaseOf(selected);
+  var h = "<h3>" + esc(fmt(selected)) + (selected===TODAY ? " (today)" : "") + "</h3>";
+  if (p){
+    h += '<span class="pill ' + p.cls + '">' + p.emoji + " " + esc(p.name) + " · " + esc(fmt(p.start)) + " to " + esc(fmt(p.end)) + "</span>";
+    h += "<p>" + esc(p.rule) + "</p>";
+  } else {
+    h += '<span class="pill none">Normal operations</span>';
+    h += "<p>No peak season restrictions apply to this date.</p>";
+  }
+  if (RELEASES[selected]) h += "<p><b>Release day:</b> " + esc(RELEASES[selected]) + ".</p>";
+  else if (new Date(toDate(selected)).getDay() === 2 && p) h += "<p class='muted'>Tuesday, but no release is scheduled in this window.</p>";
+  if (HOLIDAYS[selected]) h += "<p>" + HOLIDAYS[selected][0] + " " + esc(HOLIDAYS[selected][1]) + "</p>";
+  el.innerHTML = h;
+}
 
-        function renderScene() {
-            const scene = scenes[currentScene];
-            const app = document.getElementById('app');
-            
-            app.innerHTML = `
-                <div class="text-center mb-8">
-                    <h1 class="text-5xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                        Dev Team Space Bar Chronicles
-                    </h1>
-                    <p class="text-gray-400 text-sm italic">A True Story That Started at 5 AM on a Friday Morning 🚀🍸</p>
-                    <p class="text-red-400 text-xs mt-1 animate-pulse">⚠️ If this is what happened by 9 AM... God help us all ⚠️</p>
-                </div>
-                
-                <div class="rounded-lg shadow-2xl p-8 min-h-[600px]" style="background: ${scene.background}">
-                    <div class="max-w-4xl mx-auto">
-                        <div class="text-center mb-8">
-                            <h2 class="text-3xl font-bold text-white mb-2">${scene.title}</h2>
-                            <div class="flex items-center justify-center gap-2 text-gray-300">
-                                <span class="text-sm">Scene ${currentScene + 1} of ${scenes.length}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="min-h-[400px]">
-                            ${scene.content}
-                        </div>
-                        
-                        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-700">
-                            <button
-                                onclick="prevScene()"
-                                ${currentScene === 0 ? 'disabled' : ''}
-                                class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-700 disabled:cursor-not-allowed transition-colors"
-                            >
-                                ← Previous
-                            </button>
-                            
-                            <div class="flex gap-2">
-                                ${scenes.map((_, idx) => `
-                                    <button
-                                        onclick="goToScene(${idx})"
-                                        class="w-3 h-3 rounded-full transition-colors ${
-                                            idx === currentScene ? 'bg-cyan-400' : 'bg-gray-600 hover:bg-gray-500'
-                                        }"
-                                    ></button>
-                                `).join('')}
-                            </div>
-                            
-                            <button
-                                onclick="nextScene()"
-                                ${currentScene === scenes.length - 1 ? 'disabled' : ''}
-                                class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-700 disabled:cursor-not-allowed transition-colors"
-                            >
-                                Next →
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="max-w-4xl mx-auto mt-6 text-center">
-                    <p class="text-gray-400 text-sm">
-                        🚀 The most Friday-ish MORNING of all times 🍸👽🫒
-                    </p>
-                    <p class="text-gray-500 text-xs mt-2">
-                        Featuring: Actual work (TDE-8061), space bars, olive conspiracies, Isabel's master plan, and one AI trying its best
-                    </p>
-                </div>
-            `;
-        }
+function renderLegend(){
+  var h = '<div class="row"><i class="sw none"></i><div><b>Normal cadence</b><span>Regular releases and day-to-day work.</span></div></div>';
+  [["frost","🥶 Frost","Low risk work only, behind feature flags, with sign-off."],
+   ["freeze","🧊 Freeze","Production code changes stop unless an exception is approved."],
+   ["thaw","🌤️ Thaw","Normal cadence resumes."]].forEach(function(l){
+    var firstPhase = PHASES.filter(function(p){ return p.cls === l[0]; })[0];
+    h += '<button data-date="' + firstPhase.start + '"><i class="sw ' + l[0] + '"></i><div><b>' + l[1] + '</b><span>' + l[2] + '</span></div></button>';
+  });
+  h += '<div class="row"><i class="sw relsw"></i><div><b>Release day</b><span>Tuesdays when a release is scheduled.</span></div></div>';
+  document.getElementById("legend").innerHTML = h;
+}
 
-        function nextScene() {
-            if (currentScene < scenes.length - 1) {
-                currentScene++;
-                renderScene();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
+function select(s){
+  selected = s;
+  renderMonths(); renderDetail();
+}
+document.addEventListener("click", function(e){
+  var t = e.target.closest("[data-date]");
+  if (t) { select(t.getAttribute("data-date")); }
+});
 
-        function prevScene() {
-            if (currentScene > 0) {
-                currentScene--;
-                renderScene();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function goToScene(index) {
-            currentScene = index;
-            renderScene();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextScene();
-            if (e.key === 'ArrowLeft') prevScene();
-        });
-
-        // Initial render
-        renderScene();
-    </script>
+renderStrip(); renderMonths(); renderLegend(); renderDetail();
+</script>
 </body>
 </html>
